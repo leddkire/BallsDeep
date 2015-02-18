@@ -16,7 +16,14 @@
  **/
 
 require_once '../ARELLibrary/arel_xmlhelper.class.php';
+
+
+if(!empty($_GET['l']))
+    $position = explode(",", $_GET['l']);
+else
+    trigger_error("user position (l) missing. For testing, please provide a 'l' GET parameter with your request. e.g. pois/search/?l=23.34534,11.56734,0");
  
+ArelXMLHelper::start(NULL, "/arel/index.html", ArelXMLHelper::TRACKING_GPS);
 /**
  * When the channel is being viewed, a poi request will be sent
  * $_GET['l']...(optional) Position of the user when requesting poi search information
@@ -29,22 +36,19 @@ require_once '../ARELLibrary/arel_xmlhelper.class.php';
  
 //use the Arel Helper to start the output with arel
 
-//start output
-ArelXMLHelper::start(NULL, "/arel/index.html");
 
-//2. Image POI
-$oObject = ArelXMLHelper::createLocationBasedPOI(
-		"2", //id
-		"Hello Image POI", //title
-		array(48.12325, 11.218691, 0), //location
-		"/resources/thumb_image.png", //thumb
-		"/resources/icon_image.png", //icon
-		"This is our Image POI\n\nThe image source is: http://www.flickr.com/photos/ediamjunaio/5206110815/", //description
-		array(array("Show Image", "imageButton", "http://farm5.static.flickr.com/4104/5206110815_7ea891be0b.jpg")) //buttons
-	);
 
-//output the object
-ArelXMLHelper::outputObject($oObject);
+
+$ball = ArelXMLHelper::create360Object(
+						"ball", //id
+						"/resources/ball.obj", //model 
+						"/resources/legoStormTrooper.png", //texture
+						array(400,0,0), //translation
+						array(50, 50, 50), //scale
+						new ArelRotation(ArelRotation::ROTATION_EULERDEG, array(90, 0, 90)) //rotation
+				);
+
+ArelXMLHelper::outputObject($ball);
 //end the output
 ArelXMLHelper::end();
 

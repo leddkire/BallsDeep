@@ -8,6 +8,7 @@ var longi = 0.0;
 var alt = 0.0;
 var team = 0;
 var id = 0;
+var vivo = 1;
 var shooter;
 var yourBalls = 0;
 if (window.XMLHttpRequest)
@@ -25,13 +26,12 @@ arel.sceneReady(function()
 	//arel.Debug.activate();
 	//arel.Debug.deactivateArelLogStream();
 	//shooter = new Shooter();
-
+	
 
 	arel.Scene.getLocation(function(location){
 		lat = location.getLatitude();
 		longi = location.getLongitude();
 		alt = location.getAltitude();
-		alert("empezando");
 		xmlhttp.onreadystatechange=function(){
 		  	if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
@@ -39,6 +39,7 @@ arel.sceneReady(function()
 				var obj = JSON.parse(xmlhttp.responseText);
 				id = obj[0];
 				team = obj[1];
+				new Handler(team,id);
 			}
 	  	}
 		xmlhttp.open("POST","get_new_player.php",true);
@@ -85,89 +86,11 @@ arel.sceneReady(function()
 },true);  
   
 
-  
-function Shooter()
-{
-	this.ball = undefined;
-		
-	/*ADVANCED*/
-	//make sure that the object was not hit
-	this.objectHit = [];
-		
-	this.init = function()
-	{
-		try
-		{
-			//get the trooper and the blaster
-			this.ball = arel.Scene.getObject("ball");
-			//this.blaster = arel.Scene.getObject("legoBlaster");
-			
-			//register object event handler to the trooper
-			arel.Events.setListener(this.ball, function(obj, type, params) {this.handleBallsEvents(obj, type, params);}, this);
-			this.addNewBall();			
-			//start the idle animation of the blaster
-			/*this.blaster.startAnimation("idle", true);
-			this.trooper.startAnimation("appear");
-			//set a timer to let the trooper shoot after 3s
-			var that = this;
-						
-		
-			//every 10 seconds add a new trooper at a random position
-			setTimeout(function(){that.addNewTrooper();}, 10000);*/
-		}
-		catch(e)
-		{
-			arel.Debug.error("init " + e);
-		}
-	};
-
-	this.handleBallsEvents = function(obj, type, params)
-	{
-		if(type && type == arel.Events.Object.ONREADY)
-		{
-			arel.Media.startSound("/resources/mambo.mp3")
-		}else if(type && type == arel.Events.Object.ONTOUCHSTARTED)
-		{
-			yourBalls = yourBalls + 1;
-			document.getElementById("header").innerHTML = "x"+ yourBalls.toString();
-			arel.Scene.removeObject(obj);
-		}
-		//arel.Media.stopSound("/resources/mambo.mp3");
-	}
-	
-	this.addNewBall = function()
-	{
-		//only add a new trooper, if there are less than 5 + blaster + box 
-		//if(arel.Scene.getNumberOfObjects() < 7)
-		//{
-			var that = this;
-			var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
-			
-			//set an ID that is not given yet
-			//newBall.setID(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects());
-			
-			//add a random value to the position (-1000 - 1000)
-			var randomNumberX = Math.floor((Math.random() * 600) - 300);
-			var randomNumberY = Math.floor((Math.random() * 600) - 300);
-			console.log("ennananana");
-			newBall.setTranslation(new arel.Vector3D(randomNumberX,randomNumberY,0));
-			newBall.setScale(new arel.Vector3D(50,50,50));
-			arel.Scene.addObject(newBall);
-
-			arel.Events.setListener(newBall, function(obj, type, params) {this.handleBallsEvents(obj, type, params);}, this);
-		//}
-		
-		//add another one in 10 seconds
-		setTimeout(function(){that.addNewBall();}, 10000);
-		
-	};
-	
-	this.init();
-}
+ 
 
 function Handler(team,id){
 	
-
+	this.ball = undefined;
 	var t = team;
 	var user = id;
 	var lat;
@@ -176,6 +99,11 @@ function Handler(team,id){
 	
 	this.init = function(){
 		var that = this;
+		this.ball = arel.Scene.getObject("ball");
+			//this.blaster = arel.Scene.getObject("legoBlaster");
+			
+			//register object event handler to the trooper
+			arel.Events.setListener(this.ball, function(obj, type, params) {this.handleBallsEvents(obj, type, params);}, this);
 		this.refreshList();
 		//arel.Events.setListener(this.firstLoc, function(obj,type,params){this.handlePositions(obj,type,params);},this);
 		
@@ -185,7 +113,7 @@ function Handler(team,id){
 	{
 		if(type && type == arel.Events.Object.ONREADY)
 		{
-			arel.Media.startSound("/resources/mambo.mp3")
+			//arel.Media.startSound("/resources/mambo.mp3")
 		}else if(type && type == arel.Events.Object.ONTOUCHSTARTED)
 		{
 			yourBalls = yourBalls - 1;
@@ -195,51 +123,51 @@ function Handler(team,id){
 		//arel.Media.stopSound("/resources/mambo.mp3");
 	};
 	
-	this.handlePositions = function(obj,type,params){
-		this.refreshList();
-		
-		
-	};
-	
 	this.refreshList = function(){
-	
-	arel.Scene.getLocation(function(location){
-		this.lat = location.getLatitude()/1;
-		this.longi = location.getLongitude();
-		this.alt = location.getAltitude();
-		xmlhttp.onreadystatechange=function()
-		  {
-		  
-		  
-		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-			{
-				
-				//alert(xmlhttp.responseText);
-				var obj = JSON.parse(xmlhttp.responseText);
-				$.each(obj,function(key,eval){
-					var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
-					var LLA = new arel.LLA(eval.lat,eval.longi,eval.alt,1);
-					newBall.setPosition(LLA);
-					newBall.setScale(new arel.Vector3D(50,50,50));
-					arel.Scene.addObject(newBall);
-					yourBalls = yourBalls + 1;
-					arel.Events.setListener(newBall, function(obj, type, params) {this.handleBallsEvents(obj, type, params);}, this);
-				});
-			}
-		  }
-		xmlhttp.open("POST","requestTeam.php",true);
-		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		
-		xmlhttp.send("uName:"+this.id+"&team:"+this.t+"&lat:"+this.lat+"&longi"+this.longi+"&alt"+this.alt);
-	});	
-		
-		
-			
-		
 		var that = this;
-		setTimeout(function(){that.refreshList();},1000);
+		if(yourBalls >= 25){
+			vivo = 0;
+		}
+		arel.Scene.getLocation(function(location){
+			this.lat = location.getLatitude()/1;
+			this.longi = location.getLongitude();
+			this.alt = location.getAltitude();
+			xmlhttp.onreadystatechange=function()
+			  {
+			  
+			  
+			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+					
+					//alert(xmlhttp.responseText);
+					var obj = JSON.parse(xmlhttp.responseText);
+					$.each(obj,function(key,eval){
+						var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
+						var LLA = new arel.LLA(eval[0],eval[1],eval[2],1);
+						newBall.setLocation(LLA);
+						arel.Events.setListener(newBall, function(obj, type, params) {that.handleBallsEvents(obj, type, params);}, that);
+						newBall.setScale(new arel.Vector3D(300,300,300));
+						arel.Scene.addObject(newBall);
+						yourBalls = yourBalls + 1;
+					});
+				}
+			  }
+			xmlhttp.open("POST","requestTeam.php",true);
+			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xmlhttp.send("uName:"+id+"&team:"+team+"&lat:"+this.lat+"&longi"+this.longi+"&alt"+this.alt+"&vivo:"+vivo);
+		});	
+			
+			
+				
+		if(vivo){
+			var that = this;
+			setTimeout(function(){that.refreshList();},5000);
+		}else{
+			alert("Has perdido. reinicia el canal para volver a empezar");
+		}
+		
 	};
-	this.init();
+		this.init();
 	
 }
 
