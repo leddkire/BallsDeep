@@ -38,15 +38,14 @@ arel.sceneReady(function()
 			{
 				alert(xmlhttp.responseText);
 				var obj = JSON.parse(xmlhttp.responseText);
-				id = obj[0];
 				team = obj[1];
-				new Handler(team,id);
+				new Handler(team);
 			}
 	  	}
 		xmlhttp.open("POST","get_new_player.php",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		
-		xmlhttp.send("lat="+lat+"&longi="+longi+"&alt="+alt+"&vivo="+vivo);
+		xmlhttp.send();
 	});
 
 	// xmlhttp.onreadystatechange=function()
@@ -130,10 +129,6 @@ function Handler(team,id){
 	if(yourBalls >=20){
 		vivo = 0;
 	}
-	arel.Scene.getLocation(function(location){
-		lat = location.getLatitude()/1;
-		longi = location.getLongitude();
-		alt = location.getAltitude();
 		xmlhttp.onreadystatechange=function()
 		  {
 		  
@@ -143,7 +138,8 @@ function Handler(team,id){
 				
 				//alert(xmlhttp.responseText);
 				var obj = JSON.parse(xmlhttp.responseText);
-					for(int i =0; i< obj.balls; i++){
+				var derp = obj.parseInt();
+					for(int i =0; i< derp; i++){
 						var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
 						arel.Events.setListener(newBall, function(obj, type, params) {that.handleBallsEvents(obj, type, params);}, that);
 						var randomNumberX = Math.floor((Math.random() * 600) - 300);
@@ -162,12 +158,11 @@ function Handler(team,id){
 		  }
 		xmlhttp.open("POST","requestTeam.php",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xmlhttp.send("balls="+balls);
-	});	
+		xmlhttp.send("balls="+balls+"&team="+team);
 		
 		if(vivo){
 			var that = this;
-			setTimeout(function(){that.refreshList();},2000);
+			setTimeout(function(){that.refreshList();},1000);
 		}else{
 			alert("Perdiste. Reinicie el canal para volver a jugar");
 		}	
