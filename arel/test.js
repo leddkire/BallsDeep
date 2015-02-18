@@ -25,25 +25,46 @@ arel.sceneReady(function()
 	//arel.Debug.activate();
 	//arel.Debug.deactivateArelLogStream();
 	//shooter = new Shooter();
-	
-	xmlhttp.onreadystatechange=function()
-		  {
-		  
-		  
-		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+
+
+	arel.Scene.getLocation(function(location){
+		lat = location.getLatitude();
+		longi = location.getLongitude();
+		alt = location.getAltitude();
+		alert("empezando");
+		xmlhttp.onreadystatechange=function(){
+		  	if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
 				alert(xmlhttp.responseText);
 				var obj = JSON.parse(xmlhttp.responseText);
-				this.team = obj.team;
-				this.id = obj.id;
-				
-				new Handler(this.team,this.id);
+				id = obj[0];
+				team = obj[1];
 			}
-		  }
-	xmlhttp.open("POST","requestTeam.php",true);
+	  	}
+		xmlhttp.open("POST","get_new_player.php",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		
-		xmlhttp.send();
+		xmlhttp.send("lat="+lat+"&longi="+longi+"&alt="+alt);
+	});
+
+	// xmlhttp.onreadystatechange=function()
+	// 	  {
+		  
+		  
+	// 	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	// 		{
+	// 			alert(xmlhttp.responseText);
+	// 			var obj = JSON.parse(xmlhttp.responseText);
+	// 			this.team = obj.team;
+	// 			this.id = obj.id;
+				
+	// 			new Handler(this.team,this.id);
+	// 		}
+	// 	  }
+	// 	xmlhttp.open("POST","get_new_player.php",true);
+	// 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		
+	// 	xmlhttp.send();
 	
 	/*	
 	arel.Scene.getLocation(function(location){
