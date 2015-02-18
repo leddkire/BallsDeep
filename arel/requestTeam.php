@@ -4,6 +4,7 @@
   $lat = $_POST['lat'];
   $longi = $_POST['longi'];
   $alt = $_POST['alt'];
+  $vivo = $_POST['vivo'];
   $positions = array();
 	
   function replace_archivo($team) {
@@ -17,16 +18,16 @@
     $i = 0;
     $exists = false;
     while($i < sizeof($lines)){
-      $words = explode(",", $lines[$i], 4);
+      $words = explode(",", $lines[$i], 5);
       if($words[0] == $GLOBALS['id']){
-        $lines[$i] = $words[0] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'];
+        $lines[$i] = $words[0] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'] . "," . $GLOBALS['vivo'] . "\n";
         $exists = true;
         break;
       }
       $i++;
     }
     if(!$exists) {
-      array_push($lines, $GLOBALS['id'] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt']);
+      array_push($lines, $GLOBALS['id'] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'] . "," . $GLOBALS['vivo'] . "\n");
     }
     $newContent = implode('', $lines);
     //En ciclo hasta que el lock se haga, luego se libera.
@@ -48,8 +49,10 @@
     }
     
     while (($line = fgets($file)) != false) {
-      $words = explode(',', $line, 4);
-      array_push($GLOBALS['positions'],[$words[1], $words[2], rtrim($words[3])]);
+      $words = explode(',', $line, 5);
+      if(rtrim($words[4]) == '1') {
+        array_push($GLOBALS['positions'],[$words[1], $words[2], $words[3],rtrim($words[4])]);
+      }
     }
     flock($file,LOCK_UN);
     fclose($file);
