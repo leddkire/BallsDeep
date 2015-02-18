@@ -51,7 +51,7 @@
     while (($line = fgets($file)) != false) {
       $words = explode(',', $line, 5);
       if(rtrim($words[4]) == '1') {
-        array_push($GLOBALS['positions'],[$words[1], $words[2], $words[3],rtrim($words[4])]);
+        array_push($GLOBALS['positions'],[$words[1], $words[2],$words[3]]);
       }
     }
     flock($file,LOCK_UN);
