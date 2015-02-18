@@ -7,7 +7,7 @@
     
     //En ciclo hasta que el lock se haga, luego se libera.
     $lines = file($team . '.txt');
-	  $new = $GLOBALS['balls'];
+	  $new = $GLOBALS['balls']. "\n";
     if(sizeof($lines) > 0){
         $val = intval(rtrim($lines[0]))+intval($GLOBALS['balls']);
         $new = strval($val) . "\n";
