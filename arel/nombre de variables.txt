@@ -1,0 +1,7 @@
+variables:
+
+id del usuario: uName
+equipo: team
+latitud: lat
+longitud: longi
+altitud: alt
