@@ -13,7 +13,7 @@
         $new = strval($val) . "\n";
     }
 
-	file_put_contents($team . '.txt', $new, LOCK_EX);
+	 file_put_contents($team . '.txt', $new, LOCK_EX);
 
   }
 
@@ -21,7 +21,8 @@
   
   function read_file($team) {
     $lines = file($team . '.txt');
-    $new = strval(0) . "\n";
+    $ceroValor = 0;
+    $new = strval($ceroValor) . "\n";
     if(sizeof($lines) > 0){
         $GLOBALS['newBalls'] = rtrim($lines[0]);
     }
