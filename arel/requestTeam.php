@@ -1,55 +1,31 @@
 <?php
 
-  $id = $_POST['uName'];
-  $lat = $_POST['lat'];
-  $longi = $_POST['longi'];
-  $alt = $_POST['alt'];
-  $vivo = $_POST['vivo'];
-  $positions = array();
+  $balls = $_POST['balls'];
+  $newBalls = strval(0);
 	
   function replace_archivo($team) {
     
     //En ciclo hasta que el lock se haga, luego se libera.
     $lines = file($team . '.txt');
-    
-    $i = 0;
-    $exists = false;
-	
-    while($i < sizeof($lines)){
-      $words = explode(",", $lines[$i], 5);
-      if($words[0] == $GLOBALS['id']){
-        $lines[$i] = $words[0] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'] . "," . $GLOBALS['vivo'] . "\n";
-        $exists = true;
-        break;
-      }
-      $i++;
+	  $new = $GLOBALS['balls'];
+    if(sizeof($lines) > 0){
+        $val = intval(rtrim($lines[0]))+intval($GLOBALS['balls']);
+        $new = strval($val) . "\n";
     }
-    if(!$exists) {
-      array_push($lines, $GLOBALS['id'] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'] . "," . $GLOBALS['vivo'] . "\n");
-    }
-    $newContent = implode('', $lines);
 
-	file_put_contents($team . '.txt', $newContent, LOCK_EX);
+	file_put_contents($team . '.txt', $new, LOCK_EX);
 
   }
 
   //Funcion que lee el archivo enemigo y toma las coordenadas
   
   function read_file($team) {
-    $file = fopen($team .'.txt',"r");
-    //En ciclo hasta que el lock se haga, luego se libera.
-    while(!flock($file,LOCK_SH)){
-      //Not yet
+    $lines = file($team . '.txt');
+    $new = strval(0) . "\n";
+    if(sizeof($lines) > 0){
+        $GLOBALS['newBalls'] = rtrim($lines[0]);
     }
-    
-    while (($line = fgets($file)) != false) {
-      $words = explode(',', $line, 5);
-      if(rtrim($words[4]) == 1) {
-        array_push($GLOBALS['positions'],[$words[1], $words[2],$words[3]]);
-      }
-    }
-    flock($file,LOCK_UN);
-    fclose($file);
+    file_put_contents($team . '.txt', $new, LOCK_EX);
   }
 
   replace_archivo($_POST['team']);
@@ -64,6 +40,6 @@
 
 
 
-  echo json_encode($positions);
+  echo json_encode($newBalls);
 
 ?>
