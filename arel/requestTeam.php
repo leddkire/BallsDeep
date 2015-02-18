@@ -8,15 +8,13 @@
   $positions = array();
 	
   function replace_archivo($team) {
-    $file = fopen($team .'.txt',"w");
+    
     //En ciclo hasta que el lock se haga, luego se libera.
-    while(!flock($file,LOCK_SH)){
-      //Not yet
-    }
-    $lines = file($team .'.txt');
-    flock($file,LOCK_UN);
+    $lines = file($team . '.txt');
+    
     $i = 0;
     $exists = false;
+	
     while($i < sizeof($lines)){
       $words = explode(",", $lines[$i], 5);
       if($words[0] == $GLOBALS['id']){
@@ -30,13 +28,9 @@
       array_push($lines, $GLOBALS['id'] .",". $GLOBALS['lat'] .",". $GLOBALS['longi'] .",". $GLOBALS['alt'] . "," . $GLOBALS['vivo'] . "\n");
     }
     $newContent = implode('', $lines);
-    //En ciclo hasta que el lock se haga, luego se libera.
-    while(!flock($file,LOCK_EX)){
-      //Not yet
-    }
-	file_put_contents($file, $newContent, LOCK_EX);
-    flock($file,LOCK_UN);
-    fclose($file);
+
+	file_put_contents($team . '.txt', $newContent, LOCK_EX);
+
   }
 
   //Funcion que lee el archivo enemigo y toma las coordenadas
@@ -50,7 +44,7 @@
     
     while (($line = fgets($file)) != false) {
       $words = explode(',', $line, 5);
-      if(rtrim($words[4]) == '1') {
+      if(rtrim($words[4]) == 1) {
         array_push($GLOBALS['positions'],[$words[1], $words[2],$words[3]]);
       }
     }

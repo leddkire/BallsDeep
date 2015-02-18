@@ -11,6 +11,7 @@ var id = 0;
 var vivo = 1;
 var shooter;
 var yourBalls = 0;
+var balls = 0;
 if (window.XMLHttpRequest)
   {// code for IE7+, Firefox, Chrome, Opera, Safari
   xmlhttp=new XMLHttpRequest();
@@ -45,7 +46,7 @@ arel.sceneReady(function()
 		xmlhttp.open("POST","get_new_player.php",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		
-		xmlhttp.send("lat="+lat+"&longi="+longi+"&alt="+alt);
+		xmlhttp.send("lat="+lat+"&longi="+longi+"&alt="+alt+"&vivo="+vivo);
 	});
 
 	// xmlhttp.onreadystatechange=function()
@@ -119,55 +120,62 @@ function Handler(team,id){
 			yourBalls = yourBalls - 1;
 			document.getElementById("header").innerHTML = "x"+ yourBalls.toString();
 			arel.Scene.removeObject(obj);
+			balls = balls + 1;
 		}
 		//arel.Media.stopSound("/resources/mambo.mp3");
 	};
 	
 	this.refreshList = function(){
-		var that = this;
-		if(yourBalls >= 25){
-			vivo = 0;
-		}
-		arel.Scene.getLocation(function(location){
-			this.lat = location.getLatitude()/1;
-			this.longi = location.getLongitude();
-			this.alt = location.getAltitude();
-			xmlhttp.onreadystatechange=function()
-			  {
-			  
-			  
-			  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-				{
-					
-					//alert(xmlhttp.responseText);
-					var obj = JSON.parse(xmlhttp.responseText);
-					$.each(obj,function(key,eval){
-						var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
-						var LLA = new arel.LLA(eval[0],eval[1],eval[2],1);
-						newBall.setLocation(LLA);
-						arel.Events.setListener(newBall, function(obj, type, params) {that.handleBallsEvents(obj, type, params);}, that);
-						newBall.setScale(new arel.Vector3D(300,300,300));
-						arel.Scene.addObject(newBall);
-						yourBalls = yourBalls + 1;
-					});
-				}
-			  }
-			xmlhttp.open("POST","requestTeam.php",true);
-			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			xmlhttp.send("uName:"+id+"&team:"+team+"&lat:"+this.lat+"&longi"+this.longi+"&alt"+this.alt+"&vivo:"+vivo);
-		});	
-			
-			
+	var that = this;
+	if(yourBalls >=20){
+		vivo = 0;
+	}
+	arel.Scene.getLocation(function(location){
+		lat = location.getLatitude()/1;
+		longi = location.getLongitude();
+		alt = location.getAltitude();
+		xmlhttp.onreadystatechange=function()
+		  {
+		  
+		  
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
 				
+				//alert(xmlhttp.responseText);
+				var obj = JSON.parse(xmlhttp.responseText);
+					for(int i =0; i< obj.balls; i++){
+						var newBall = arel.Object.Model3D.create(new Date().valueOf() + "_" + arel.Scene.getNumberOfObjects(),"/resources/ball.obj","/resources/icecream_texture.jpg");
+						arel.Events.setListener(newBall, function(obj, type, params) {that.handleBallsEvents(obj, type, params);}, that);
+						var randomNumberX = Math.floor((Math.random() * 600) - 300);
+						var randomNumberY = Math.floor((Math.random() * 600) - 300);
+						newBall.setTranslation(new arel.Vector3D(randomNumberX,randomNumberY,0));
+						newBall.setScale(new arel.Vector3D(50,50,50));
+						arel.Scene.addObject(newBall);
+						
+						document.getElementById("header").innerHTML = "x"+ yourBalls.toString();
+						
+					
+					}
+					yourBalls = yourBalls + obj.balls;
+					balls = 0;
+			}
+		  }
+		xmlhttp.open("POST","requestTeam.php",true);
+		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xmlhttp.send("balls="+balls);
+	});	
+		
 		if(vivo){
 			var that = this;
-			setTimeout(function(){that.refreshList();},5000);
+			setTimeout(function(){that.refreshList();},2000);
 		}else{
-			alert("Has perdido. reinicia el canal para volver a empezar");
-		}
+			alert("Perdiste. Reinicie el canal para volver a jugar");
+		}	
+			
+		
 		
 	};
-		this.init();
+	this.init();
 	
 }
 

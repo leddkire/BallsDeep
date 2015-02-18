@@ -14,7 +14,7 @@
 retry:
 	if (!flock($file, LOCK_EX))
 		goto retry;
-	$string = $id_jugador.",".$_POST["lat"].",".$_POST["longi"].",".$_POST["alt"]."\n";
+	$string = $id_jugador.",".$_POST["lat"].",".$_POST["longi"].",".$_POST["alt"].",".$_POST["vivo"]."\n";
 	fwrite($file, $string);
 	fclose($file);
 
