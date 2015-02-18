@@ -1,7 +1,8 @@
 <?php
 
   $balls = $_POST['balls'];
-  $newBalls = strval(0);
+  $cero = 0;
+  $newBalls = strval($cero);
 	
   function replace_archivo($team) {
     
